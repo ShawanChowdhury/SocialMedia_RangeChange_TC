@@ -6,7 +6,7 @@ library(ade4)
 library(tidyverse)
 
 # List of files
-occ_list <- list.files(path = "data/occ/", pattern = "csv", recursive = TRUE, full.names = TRUE)
+occ_list <- list.files(path = "data/occ/yr/", pattern = "csv", recursive = TRUE, full.names = TRUE)
 env_list <- list.files(path = "data/pred_mean/", pattern = "tif", recursive = TRUE, full.names = TRUE)
 
 yr <- c("yr1", "yr2", "yr3", "yr4", "yr5")
@@ -73,12 +73,47 @@ for (i in yr) {
   # Calculate niche overlap
   niche_ov <- ecospat.niche.overlap (combined.grid, gbif.grid, cor = TRUE)$D
   
+  #################################
+  # Niche equivalency test
+  equiv.test <- ecospat.niche.equivalency.test(gbif.grid, combined.grid, rep = 100)
+  
+  # Extract D values
+  obs.D <- equiv.test$obs["D"]
+  sim.D <- equiv.test$sim[,"D"]
+  
+  # Calculate p-value 
+  equiv.pval <- sum(sim.D >= obs.D) / length(sim.D)
+
+  #################################
+  # Niche similarity test
+  # GBIF niche vs combined background
+  sim.test.gbif <- ecospat.niche.similarity.test(gbif.grid, combined.grid, rep = 100)
+  
+  # Combined niche vs gbif background
+  sim.test.combined <- ecospat.niche.similarity.test(combined.grid, gbif.grid, rep = 100)
+  
+  # Extract D values only
+  obs.gbif.D <- sim.test.gbif$obs["D"]
+  sim.gbif.D <- sim.test.gbif$sim[,"D"]
+  
+  # Calculate correct p-value
+  sim.pval.gbif <- sum(sim.gbif.D >= obs.gbif.D) / length(sim.gbif.D)
+
+  obs.combined.D <- sim.test.combined$obs["D"]
+  sim.combined.D <- sim.test.combined$sim[,"D"]
+  
+  sim.pval.combined <- sum(sim.combined.D >= obs.combined.D) / length(sim.combined.D)
+
+  #################################
   niche_ov <- as.data.frame(niche_ov)
   niche_ov <- niche_ov %>% 
-    dplyr::mutate(year = i) %>% 
-    dplyr::select(year, niche_ov)
+    dplyr::mutate(year = i, equiv.pval = equiv.pval, 
+                  sim.pval.gbif = sim.pval.gbif,
+                  sim.pval.combined = sim.pval.combined) %>% 
+    dplyr::select(year, niche_ov, equiv.pval, sim.pval.gbif, sim.pval.combined)
   
   niche_ov_merged <- rbind(niche_ov_merged, niche_ov)
+  
   
   # Plot niches
   # Get description of PCA axes variation in relation to original predictors
@@ -109,8 +144,8 @@ for (i in yr) {
  }
 
 # Exporting niche overlap data
-write_csv(niche_ov_merged, "output/niche_ov_merged.csv")
-write_csv(pca_var_contrib, "output/pca_var_contrib.csv")
+write_csv(niche_ov_merged, "output/niche_ov_merged_up.csv")
+write_csv(pca_var_contrib, "output/pca_var_contrib_up.csv")
 
 
 ecospat.plot.niche.dyn(combined.grid, gbif.grid, quant = 0.1, interest = 2, 

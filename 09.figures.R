@@ -9,6 +9,7 @@ library(RColorBrewer)
 library(rasterVis)
 library(viridis)
 library(ggrepel)
+library(rworldmap)
 
 # Importing data
 data <- read_delim("data/com_int.txt", delim = ",")
@@ -21,19 +22,19 @@ year_rec <- data %>%
   mutate(total = sum(n), per = n/total*100)
 
 # Exporting summarised data frame
-write_csv(year_rec, "output/year_growth.csv")
+write_csv(year_rec, "output/year_growth_up.csv")
 
 # Plot
 ggplot(year_rec, aes(year, per, fill = type)) +
   geom_bar(stat = "identity", position = "stack") +
   xlab("") + ylab("% of occurrence records") + theme_classic() +
   scale_fill_manual(values = c("orange", "blue2")) +
-  geom_hline(yintercept = 50, lty = "dashed", col = "white") +
+  geom_hline(yintercept = 50, lty = "dashed", col = "black") +
   theme(legend.position = "top", 
         legend.title = element_blank())
 
 # Exporting output
-ggsave("output/figure/year_growth.png")
+ggsave("output/figure/year_growth_up.png")
 
 ###################################
 # Percent of records by country
@@ -43,10 +44,10 @@ region_rec <- data %>%
   mutate(total = sum(n), per = n/total*100)
 
 # Exporting summarised data frame
-write_csv(region_rec, "output/region_rec_per.csv")
+write_csv(region_rec, "output/region_rec_per_up.csv")
 
 # Importing file
-region_rec <- read_csv("output/region_rec_per.csv")
+region_rec <- read_csv("output/region_rec_per_up.csv")
 
 # Plot
 region_rec %>%
@@ -69,7 +70,7 @@ region_rec %>%
   theme_classic() + xlab("") + ylab("") + coord_flip()
 
 # Exporting output
-ggsave("output/figure/region_rec_per.png")
+ggsave("output/figure/region_rec_per_up.png")
 
 # Total records vs % of records from social media
 region_rec_sm <- region_rec %>% 
@@ -80,13 +81,14 @@ ggplot(region_rec_sm, aes(total, per)) +
   geom_smooth(method = "lm") +
   scale_x_log10() +
   theme_classic() + xlab("Total number of records") +
-  ylab("% of social media records") +
+  ylab("% of social media records")  +
+  geom_hline(yintercept = 50, lty = "dashed", col = "black") +
   geom_label_repel(aes(label = name),
-                   box.padding   = 0.5,
+                   box.padding   = 1,
                    segment.color = 'grey50')
 
 # Exporting output
-ggsave("output/figure/total_rec_per_sm.png")
+ggsave("output/figure/total_rec_per_sm_up.png")
 
 ###################################
 # Differences in suitability distribution
@@ -133,7 +135,7 @@ ggsave("output/figure/early_rec.png")
 
 ##########################
 # Yearly expansion
-exp <- read_csv("output/exp_yr.csv")
+exp <- read_csv("output/exp_yr_up.csv")
 # exp$exp <- as.factor(exp$exp)
 
 ggplot(exp, aes(x = yr, y = exp, color = source, group = source)) +
@@ -144,11 +146,11 @@ ggplot(exp, aes(x = yr, y = exp, color = source, group = source)) +
   theme(legend.position = "none")
 
 # Exporting output
-ggsave("output/figure/exp_yr.png")
+ggsave("output/figure/exp_yr_up.png")
 
 ##########################
 # Differences in area
-diff <- read_csv("output/diff_suitability_maps.csv")
+diff <- read_csv("output/diff_suitability_maps_up.csv")
 colnames(diff)[1] <- 'yr'
 
 diff <- diff %>% 
@@ -162,15 +164,12 @@ ggplot(diff, aes(x = yr, y = area_diff, group = 1)) +
   theme(legend.position = "none")
 
 # Exporting output
-ggsave("output/figure/area_diff.png")
+ggsave("output/figure/area_diff_up.png")
 
 
 ##########################
 # Plot background data
-bg <- read_csv("data/bg.csv")
-
-# Getting German map data
-library(rworldmap)
+bg <- read_csv("data/pd.csv")
 
 world <- getMap(resolution = "low")
 study_area <- world[world@data$REGION %in% c("Asia", "Australia"), ] 
@@ -182,13 +181,13 @@ ggplot(bg, aes(lon, lat)) +
   coord_quickmap() + xlim(60.875, 158.9583) + ylim(-54.75, 53.54167) + 
   theme(legend.title = element_blank())
 
-ggsave("output/figure/background_points_map.png")
+ggsave("output/figure/background_points_map_up.png")
 
 ##########################################
 # Identifying differences and comparing predictor variables
 
 # Importing data frame
-suit_pred <- read_csv("output/diff_suitability_pred.csv")
+suit_pred <- read_csv("output/diff_suitability_pred_up.csv")
 
 # Replacing values
 suit_pred <- suit_pred %>% 
@@ -204,7 +203,7 @@ ggplot(suit_pred, aes(lat, elev, col = val)) +
   xlab("") + ylab("") + theme_classic() +
   scale_color_manual(values = c("cyan", "darkorchid"))
 
-ggsave("output/figure/lat_elev.png")
+ggsave("output/figure/lat_elev_up.png")
 
 # Temp-rainfall plot
 ggplot(suit_pred, aes(tmax, ppt, col = val)) +
@@ -212,7 +211,7 @@ ggplot(suit_pred, aes(tmax, ppt, col = val)) +
   xlab("") + ylab("") + theme_classic() +
   scale_color_manual(values = c("cyan", "darkorchid"))
 
-ggsave("output/figure/tmax_ppt.png")
+ggsave("output/figure/tmax_ppt_up.png")
 
 ########
 # Boxplot
@@ -223,7 +222,7 @@ ggplot(suit_pred, aes(val, lat, col = val)) +
   scale_color_manual(values = c("cyan", "darkorchid"))+
   theme(legend.position = "none")
 
-ggsave("output/figure/lat.png")
+ggsave("output/figure/lat_up.png")
 
 # elevation
 ggplot(suit_pred, aes(val, elev, col = val)) +
@@ -232,7 +231,7 @@ ggplot(suit_pred, aes(val, elev, col = val)) +
   scale_color_manual(values = c("cyan", "darkorchid"))+
   theme(legend.position = "none")
 
-ggsave("output/figure/elev.png")
+ggsave("output/figure/elev_up.png")
 
 # tmax
 ggplot(suit_pred, aes(val, tmax, col = val)) +
@@ -241,7 +240,7 @@ ggplot(suit_pred, aes(val, tmax, col = val)) +
   scale_color_manual(values = c("cyan", "darkorchid"))+
   theme(legend.position = "none")
 
-ggsave("output/figure/tmax.png")
+ggsave("output/figure/tmax_up.png")
 
 # ppt
 ggplot(suit_pred, aes(val, ppt, col = val)) +
@@ -250,5 +249,88 @@ ggplot(suit_pred, aes(val, ppt, col = val)) +
   scale_color_manual(values = c("cyan", "darkorchid"))+
   theme(legend.position = "none")
 
-ggsave("output/figure/ppt.png")
+ggsave("output/figure/ppt_up.png")
 
+#####################
+# Plot raster
+library(ggplot2)
+library(raster)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+
+# Load raster
+r <- raster("output/suit_diff/diff_yr5.tif")
+df <- as.data.frame(r, xy = TRUE)  # Convert raster to data frame
+
+# Check column names
+colnames(df)
+colnames(df)[3] <- "layer"
+
+# Load world map and filter for Asia & Australia
+world <- ne_countries(scale = "medium", returnclass = "sf")
+asia_australia <- world[world$continent %in% c("Asia", "Oceania"), ]
+
+# Define color palette
+# color_palette <- c("darkorchid4", "skyblue1", "grey92", "darkgoldenrod1")
+
+# Plot raster with background map
+ggplot() +
+  geom_sf(data = asia_australia, fill = "grey92", color = NA) +  # Background map
+  geom_raster(data = df, aes(x = x, y = y, fill = layer), na.rm = TRUE) +  # Raster overlay
+  scale_fill_gradientn(
+    colors = c("purple", "cyan", "grey92", "darkgoldenrod1"),
+    na.value = NA  # Makes NA areas fully transparent
+  ) +
+  coord_sf(xlim = c(60, 155), ylim = c(-35, 40), expand = FALSE) +  # Focus on Asia & Australia
+  theme_void()
+
+
+######################################
+# Plot rasters in a loop
+# List of suitability maps in different year intervals
+list <- list.files(path = "output/suit_diff/", pattern = "tif", 
+                   recursive = TRUE, full.names = TRUE)
+
+# Load world map and filter for Asia & Australia
+world <- ne_countries(scale = "medium", returnclass = "sf")
+asia_australia <- world[world$continent %in% c("Asia", "Oceania"), ]
+
+
+for (i in list) {
+ 
+  print(i)
+  
+  # File location reformatting
+  loc_name <- gsub("output/suit_diff//diff_", "", i)
+  loc_name <- gsub(".tif", "_suit_diff", loc_name)
+  
+  # Load raster
+  r <- raster(i)
+  df <- as.data.frame(r, xy = TRUE)  # Convert raster to data frame
+  
+  # Check column names
+  colnames(df)
+  colnames(df)[3] <- "layer"
+  
+  # Plot raster with background map
+  plot <- ggplot() +
+    geom_sf(data = asia_australia, fill = "grey92", color = NA) +  # Background map
+    geom_raster(data = df, aes(x = x, y = y, fill = layer), na.rm = TRUE) +  # Raster overlay
+    scale_fill_gradientn(
+      colors = c("purple", "cyan", "grey92", "darkgoldenrod1"),
+      na.value = NA  # Makes NA areas fully transparent
+    ) +
+    coord_sf(xlim = c(60, 155), ylim = c(-35, 40), expand = FALSE) +  # Focus on Asia & Australia
+    theme_void() +
+    theme(legend.position = "none")  # Remove legend
+  
+  # Optionally save the plot
+  ggsave(filename = paste0("output/figure/", loc_name, ".png"), plot = plot, width = 8, height = 6, dpi = 300)
+   
+}
+
+###########################
+# Model performance
+list <- list.files(path = "output/sdm/com/", pattern = "csv", 
+                   recursive = TRUE, full.names = TRUE)

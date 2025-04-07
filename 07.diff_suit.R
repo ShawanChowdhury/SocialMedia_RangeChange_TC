@@ -233,4 +233,34 @@ rm(yr1_df, yr2_df, yr3_df, yr4_df, yr5_df)
 suit_pred <- dplyr::left_join(diff_df, yr, by = c("lon", "lat", "year"))
 
 # Exporting data
-write_csv(suit_pred, "output/diff_suitability_pred.csv")
+write_csv(suit_pred, "output/diff_suitability_pred_up.csv")
+
+##########
+# Calculating differences in suitability distribution
+# List of suitability maps in different year intervals
+list <- list.files(path = "output/bin_maps_full/", pattern = "tif", 
+                   recursive = TRUE, full.names = TRUE)
+
+yr <- c("yr1", "yr2", "yr3", "yr4", "yr5")
+
+for (i in yr) {
+  
+  print(i)
+  
+  # Subsetting data files
+  tifs <- list[stringr::str_detect(list, i)]
+  gbif <- tifs[stringr::str_detect(tifs, "gbif")]
+  com <- tifs[stringr::str_detect(tifs, "com")]
+  
+  # Importing rasters
+  r_gbif <- raster(gbif)
+  r_com <- raster(com)
+  
+  # Calculating differences
+  r <- (r_gbif - 2*r_com)
+  
+  # Exporting raster
+  writeRaster(r, paste0("output/suit_diff/diff_", i, ".tif"), 
+              NAflag=-9999, overwrite = TRUE)
+
+  }

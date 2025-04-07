@@ -79,7 +79,7 @@ for (i in yr) {
                        parallel = FALSE, algorithm = 'maxnet')
   
   # Exporting original model
-  write_rds(model, file = paste0("output/sdm/gbif/gbif_model_", i, ".rds"))
+  # write_rds(model, file = paste0("output/sdm/gbif/gbif_model_", i, ".rds"))
   
   # Overall results
   res <- eval.results(model)

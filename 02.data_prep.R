@@ -83,8 +83,8 @@ yr1_gbif <- gbif_dedup %>%
   filter(year %in% c("2005", "2006", "2007", "2008")) %>% 
   mutate(year_group = "yr1")
 
-# Randomly select data points
-yr1_sm <- sample_n(yr1_sm, 10)
+# # Randomly select data points
+# yr1_sm <- sample_n(yr1_sm, 10)
 
 # Combined dataframes
 yr1 <- rbind(yr1_sm, yr1_gbif)
@@ -104,8 +104,8 @@ yr2_gbif <- gbif_dedup %>%
   filter(year %in% c("2009", "2010", "2011", "2012")) %>% 
   mutate(year_group = "yr2")
 
-# Randomly select data points
-yr2_sm <- sample_n(yr2_sm, 42)
+# # Randomly select data points
+# yr2_sm <- sample_n(yr2_sm, 42)
 
 # Combined dataframes
 yr2 <- rbind(yr2_sm, yr2_gbif)
@@ -124,9 +124,9 @@ yr3_sm <- sm_dedup %>%
 yr3_gbif <- gbif_dedup %>% 
   filter(year %in% c("2013", "2014", "2015", "2016")) %>% 
   mutate(year_group = "yr3")
-
-# Randomly select data points
-yr3_sm <- sample_n(yr3_sm, 134)
+# 
+# # Randomly select data points
+# yr3_sm <- sample_n(yr3_sm, 134)
 
 # Combined dataframes
 yr3 <- rbind(yr3_sm, yr3_gbif)
@@ -146,8 +146,8 @@ yr4_gbif <- gbif_dedup %>%
   filter(year %in% c("2017", "2018", "2019", "2020")) %>% 
   mutate(year_group = "yr4")
 
-# Randomly select data points
-yr4_sm <- sample_n(yr4_sm, 399)
+# # Randomly select data points
+# yr4_sm <- sample_n(yr4_sm, 399)
 
 # Combined dataframes
 yr4 <- rbind(yr4_sm, yr4_gbif)
@@ -167,8 +167,8 @@ yr5_gbif <- gbif_dedup %>%
   filter(year %in% c("2021", "2022", "2023", "2024")) %>% 
   mutate(year_group = "yr5")
 
-# Randomly select data points
-yr5_gbif <- sample_n(yr5_gbif, 417)
+# # Randomly select data points
+# yr5_gbif <- sample_n(yr5_gbif, 417)
 
 # Combined dataframes
 yr5 <- rbind(yr5_sm, yr5_gbif)

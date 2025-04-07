@@ -73,14 +73,14 @@ for (i in yr) {
   envs.bg <- raster::mask(envs.bg, occs.buf)
   
   # Reading background point file
-  bg <- read_csv("data/bg.csv")
+  bg <- read_csv("data/pd.csv")
   
   model <- ENMevaluate(occs = occs, envs = envs.bg, bg = bg, partitions = 'checkerboard2', 
                        tune.args = list(fc = c("L", "LQ", "H", "LQH", "LQHP", "LQHPT"), rm = seq(0.5, 4, 0.5)),
                        parallel = FALSE, algorithm = 'maxnet')
   
   # Exporting original model
-  write_rds(model, file = paste0("output/sdm/com/com_model_", i, ".rds"))
+  # write_rds(model, file = paste0("output/sdm/com/com_model_", i, ".rds"))
   
   # Overall results
   res <- eval.results(model)

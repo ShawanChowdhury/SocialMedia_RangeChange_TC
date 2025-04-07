@@ -145,7 +145,7 @@ for(i in yr){
 }
 
 # Exporting output (merged data frame)
-write_csv(merged_data, "output/diff_suitability_maps.csv")
+write_csv(merged_data, "output/diff_suitability_maps_up.csv")
 
 #####################################
 # Calculating yearly expansion

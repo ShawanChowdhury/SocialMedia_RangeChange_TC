@@ -23,6 +23,16 @@ gbif_cl <- dplyr::distinct(gbif_cl)
 write_csv(gbif_cl, "data/gbif_cl.csv")
 
 #########################################
+# Background points [distribution of Papilio demoleus, a similar range-shifting butterfly]
+pd <- read_delim(file = 'data/gbif/pd/occurrence.txt', delim = "\t")
+
+# Removing duplicate records
+pd <- dplyr::distinct(pd)
+
+# Exporting data
+write_csv(pd, "data/pd.csv")
+
+#########################################
 # Resampling elevation raster to the other variables
 # Importing rasters
 r <- raster("data/climate/TerraClimate_aet_2006.nc")
